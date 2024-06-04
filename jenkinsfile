@@ -1,32 +1,44 @@
 pipeline {
     agent any
+
+    environment {
+        DIRECTORY_PATH = '/path/to/code/directory' // Change this to the actual path
+        TESTING_ENVIRONMENT = 'staging'
+        PRODUCTION_ENVIRONMENT = 'your_name' // Replace 'your_name' with your actual name
+    }
     
     stages {
         stage('Build') {
             steps {
-                echo 'Building the application...'
-                // Add your build steps here, e.g., compile code, build artifacts
+                script {
+                    echo "Fetch the source code from the directory path specified by the environment variable: ${env.DIRECTORY_PATH}"
+                    echo 'Compile the code and generate any necessary artifacts'
+                }
             }
         }
         
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                // Add your test steps here, e.g., unit tests, integration tests
+                script {
+                    echo 'Unit tests'
+                    echo 'Integration tests'
+                }
             }
         }
         
         stage('Code Quality Check') {
             steps {
-                echo 'Checking code quality...'
-                // Add your code quality analysis steps here, e.g., static analysis, code linting
+                script {
+                    echo 'Check the quality of the code'
+                }
             }
         }
         
         stage('Deploy') {
             steps {
-                echo 'Deploying to staging environment...'
-                // Add your deployment steps here, e.g., deploy to a staging server
+                script {
+                    echo "Deploy the application to a testing environment specified by the environment variable: ${env.TESTING_ENVIRONMENT}"
+                }
             }
         }
         
@@ -38,8 +50,9 @@ pipeline {
         
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to production...'
-                // Add your production deployment steps here, e.g., deploy to production servers
+                script {
+                    echo "Deploy the application to the production environment specified by the environment variable: ${env.PRODUCTION_ENVIRONMENT}"
+                }
             }
         }
     }
@@ -47,13 +60,17 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            // Add any cleanup steps here, e.g., delete temporary files
+            // Add any cleanup steps here
         }
         success {
             echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline failed!'
+            script {
+                echo 'Pipeline failed!'
+                // Send notifications on failure
+                // e.g., emailext to: 'team@example.com', subject: "Build failed in Jenkins: ${currentBuild.fullDisplayName}", body: "Something is wrong with ${env.JOB_NAME}"
+            }
         }
     }
 }
